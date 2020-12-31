@@ -30,7 +30,7 @@ const func = {
             table.increments().primary();
             table.uuid('uuid');
             table.string('marksman'); 
-            table.string('mage');
+            table.string('mages'); 
             table.string('fighter');
             table.string('tank');
             table.string('assassin'); 
