@@ -1,19 +1,19 @@
 
 const func = {
   initialiseTables: async function (db) {
-    await db.schema.hasTable('records').then(async (exists) => {
+    await db.schema.hasTable('champions').then(async (exists) => {
       if (!exists) {
         await db.schema
-          .createTable('records', (table) => {
+          .createTable('champions', (table) => {
             table.increments().primary();
             table.string('uuid');
-            table.string('question');
-            table.string('answer');
-            table.string('user_id');
+            table.string('championName');
+            table.string('championKey');
+            table.string('role');
             table.timestamps(true, true);
           })
           .then(async () => {
-            console.log('created table records');
+            console.log('created table champions');
           })
           .catch((e) => {
             // console.error(e)
@@ -23,26 +23,27 @@ const func = {
     })
 
 
-    await db.schema.hasTable('users').then(async (exists) => {
+    await db.schema.hasTable('roles').then(async (exists) => {
       if (!exists) {
         await db.schema
-          .createTable('users', (table) => {
+          .createTable('roles', (table) => {
             table.increments().primary();
             table.uuid('uuid');
-            table.string('email');
-            table.string('username');
-            table.string('password');
-            table.string('roles');
+            table.string('marksman'); 
+            table.string('mage');
+            table.string('fighter');
+            table.string('tank');
+            table.string('assassin'); 
+            table.string('support');
             table.timestamps(true, true);
           })
           .then(async () => {
-            console.log('created table users');
+            console.log('created table lane');
           })
           .catch((e) => {
             // console.error(e)
           })
       }
-      // db.schema.raw("ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM users);")
     })
   }
 }
