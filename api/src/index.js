@@ -89,7 +89,6 @@ app.delete('/deleteChampion/:uuid', async (req, res) => {
   console.log('deleted record.');
   console.log(result);
   res.send(result);
-
 });
 
 app.get('/champions/:uuid', async (req, res) => {
@@ -100,6 +99,7 @@ app.get('/champions/:uuid', async (req, res) => {
   res.json({
     res: result,
   }); 
+});
 
 /*
 app.get('/questions', AuthHelper.tokenValidator, async (req, res) => {
