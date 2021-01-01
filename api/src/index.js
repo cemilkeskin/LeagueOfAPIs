@@ -78,6 +78,20 @@ app.post('/add-champions', async (req, res) => {
   res.send(result);
 }); 
 
+
+app.delete('/deleteChampion/:uuid', async (req, res) => {
+  const result = await pg
+    .table('champions')
+    .where('uuid', req.params.uuid)
+    .del(['id', 'uuid', 'championName', 'championKey','role', 'created_at','updated_at'])
+    .then((res) => {
+      return res;
+    });
+  console.log('deleted record.');
+  console.log(result);
+  res.send(result);
+});
+
 /*
 app.get('/questions', AuthHelper.tokenValidator, async (req, res) => {
   await DatabaseHelper.table('records').select('*').where({ user_id: req.body.user.uuid }).then((data) => {
