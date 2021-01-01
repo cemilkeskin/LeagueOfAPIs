@@ -68,7 +68,7 @@ app.post('/add-champions', async (req, res) => {
 
    
     .table('champions')
-    .insert({ uuid, championName: `Kayn`, championKey: `141`, role:`fighter, assassin` })  
+    .insert({ uuid, championName: `Aatrox`, championKey: `266`, role:`fighter, tank`})  
     .returning('*')
     .then((res) => {
       return res;
@@ -77,6 +77,16 @@ app.post('/add-champions', async (req, res) => {
   console.log(result);
   res.send(result);
 }); 
+
+app.get('/champions/:uuid', async (req, res) => {
+  const result = await pg
+    .select(['uuid', 'championName', 'championKey','role', 'created_at','updated_at'])
+    .from('champions')
+    .where({ uuid: req.params.uuid });
+  res.json({
+    res: result,
+  }); 
+});
 
 /*
 app.get('/questions', AuthHelper.tokenValidator, async (req, res) => {
