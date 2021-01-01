@@ -91,6 +91,7 @@ app.delete('/deleteChampion/:uuid', async (req, res) => {
   res.send(result);
 });
 
+
 app.get('/champions/:uuid', async (req, res) => {
   const result = await pg
     .select(['uuid', 'championName', 'championKey','role', 'created_at','updated_at'])
