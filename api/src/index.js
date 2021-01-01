@@ -9,6 +9,7 @@ const jwtToken = require('jsontokens')
 const DatabaseHelper = require('./helper/DatabaseHelper');
 const InitialiseDBHelpers = require('./helper/InitialiseDBHelpers')
 const UUIDHelper = require('./helper/UuidHelpers');
+const Helpers = require('./helper/helpers');
 /*
 const AuthHelper = require('./helper/AuthHelper');
 InitialiseDBHelpers.initialiseTables(DatabaseHelper);
@@ -44,11 +45,44 @@ app.get('/join', async (req, res) => {
     })
 
 })
+
+app.get('/test', (req, res) => {
+  res.send('Hello World -- test phase!')
+  console.log("test done");
+ 
+});
+
+app.get('/champions', async (req, res) => {
+  const result = await pg
+    .select(['uuid', 'championName', 'championKey','role', 'created_at','updated_at'])
+    .from('champions');
+  res.json({ 
+    res: result,
+  });
+});
+
+app.post('/add-champions', async (req, res) => {
+  const uuid = Helpers.generateUUID();
+  
+  const result = await pg
+
+   
+    .table('champions')
+    .insert({ uuid, championName: `Kayn`, championKey: `141`, role:`fighter, assassin` })  
+    .returning('*')
+    .then((res) => {
+      return res;
+    });
+  console.log('added 3 champions');
+  console.log(result);
+  res.send(result);
+}); 
+
 /*
 app.get('/questions', AuthHelper.tokenValidator, async (req, res) => {
   await DatabaseHelper.table('records').select('*').where({ user_id: req.body.user.uuid }).then((data) => {
     res.send(data);
-  }).catch((error) => {
+  }).catch((error) => { 
     res.send(error).status(400)
   })
 })
@@ -133,14 +167,14 @@ async function initialiseTables() {
           table.uuid('uuid');
           table.string('championName');
           table.string('championKey');
-          table.integer('role');
+          table.string('role');
           table.timestamps(true, true);
         })
         .then(async () => {
           console.log('created table champions');
          
         });
-
+ 
     }
   });
   await pg.schema.hasTable('roles').then(async (exists) => {
@@ -157,7 +191,7 @@ async function initialiseTables() {
           table.string('support');
           table.timestamps(true, true);
         }) 
-        .then(async () => {
+        .then(async () => { 
           console.log('created table roles');
           
         });
