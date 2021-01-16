@@ -43,6 +43,11 @@ app.get('/test', (req, res) => {
  
 });
 
+/**  get all current records in champions table
+ * @params
+ * @returns all champions in RAW format
+ */
+
 app.get('/champions', async (req, res) => {
   const result = await pg
     .select(['uuid', 'championName', 'championKey','role', 'created_at','updated_at'])
@@ -51,6 +56,11 @@ app.get('/champions', async (req, res) => {
     res: result,
   });
 });
+
+/**  post a new record with generated uuid in champions table
+ * @params 
+ * @returns posts one record in champions table
+ */
 
 app.post('/champion', async (req, res) => {
   const uuid = Helpers.generateUUID();
@@ -66,7 +76,12 @@ app.post('/champion', async (req, res) => {
   console.log('added 3 champions');
   console.log(result);
   res.send(result);
-}); 
+});
+
+/**  delete specific champion by the uuid in champions table
+ * @params uuid
+ * @returns deletes the record specified by the uuid from champions table
+ */
 
 app.delete('/champion/:uuid', async (req, res) => {
   const result = await pg
@@ -74,13 +89,17 @@ app.delete('/champion/:uuid', async (req, res) => {
     .where('uuid', req.params.uuid)
     .del(['id', 'uuid', 'championName', 'championKey','role', 'created_at','updated_at'])
     .then((res) => {
-      return res;
+      return res; 
     });
   console.log('deleted record.');
   console.log(result);
   res.send(result);
 });
 
+/**  get specific champion by the uuid in champions table
+ * @params uuid
+ * @returns one specific record by the uuid from champions table
+ */
 
 app.get('/champion/:uuid', async (req, res) => {
   const result = await pg
@@ -91,6 +110,29 @@ app.get('/champion/:uuid', async (req, res) => {
     res: result,
   }); 
 });
+
+/**  update champion searching by the uuid in champions table
+ * @params uuid
+ * @returns updates the record in champions table by the uuid
+ */
+
+app.put('/champion/:uuid', async (req, res) => {
+  const result = await pg
+  .table('champions')
+  .where({ uuid: req.params.uuid})
+    .update({ championName: `Kayn`, championKey: `6931`, role: `assassin` })
+    .returning('*')
+    .then(function (result) {
+      console.log(result);
+      res.json(result);
+      res.status(200).send('Champion successfully edited!');
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(404).send('Error editing champion!');
+    });
+});
+
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(process.env.PORT || 3001, () => console.log(`Listening on port ${process.env.PORT || 3001}`));
