@@ -18,7 +18,7 @@ const Helpers = {
     if (a.length < 100 && typeof a === 'string') {
       return a;
     } else {
-      false;
+      false; 
     }
   },
 };
