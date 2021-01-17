@@ -57,6 +57,20 @@ app.get('/champions', async (req, res) => {
   });
 });
 
+/**  get all current records in roles table
+ * @params
+ * @returns all roles in RAW format
+ */
+
+app.get('/roles', async (req, res) => {
+  const result = await pg
+    .select(['uuid', 'role'])
+    .from('roles');
+  res.json({ 
+    res: result,
+  });
+});
+
 /**  post a new record with generated uuid in champions table
  * @params 
  * @returns posts one record in champions table
@@ -68,12 +82,33 @@ app.post('/champion', async (req, res) => {
   const result = await pg
 
     .table('champions')
-    .insert({ uuid, championName: `Aatrox`, championKey: `266`, role:`fighter, tank`})  
+    .insert({ uuid, championName: `Kha'Zix`, championKey: `49`, role:`assassin`})
     .returning('*')
     .then((res) => {
       return res;
     });
   console.log('added 3 champions');
+  console.log(result);
+  res.send(result);
+});
+
+/**  post a new record to the table roles
+ * @params 
+ * @returns posts one record in roles table
+ */
+
+app.post('/role', async (req, res) => {
+  const uuid = Helpers.generateUUID();
+  
+  const result = await pg
+
+    .table('roles')
+    .insert({ uuid, role: `mage`})  
+    .returning('*')
+    .then((res) => {
+      return res;
+    });
+  console.log('added one table');
   console.log(result);
   res.send(result);
 });
@@ -95,6 +130,39 @@ app.delete('/champion/:uuid', async (req, res) => {
   console.log(result);
   res.send(result);
 });
+
+
+/**  delete specific champion by the uuid in champions table
+ * @params uuid
+ * @returns deletes the record specified by the uuid from champions table
+ */
+
+app.delete('/role/:role', async (req, res) => {
+  const result = await pg
+    .table('roles')
+    .where('role', req.params.role)
+    .del(['id', 'uuid', 'role'])
+    .then((res) => {
+      return res; 
+    })
+
+  console.log('deleted record.');
+  console.log(result);
+  res.send(result);
+
+  await pg
+  .table('champions')
+  .where('role', req.params.role)
+  .del(['id', 'uuid', 'championName', 'championKey','role', 'created_at','updated_at'])
+  .then((res) => {
+    return res; 
+  })
+
+console.log('deleted record.');
+console.log(result);
+res.send(result);
+});
+
 
 /**  get specific champion by the uuid in champions table
  * @params uuid
@@ -146,7 +214,7 @@ async function initialiseTables() {
           table.increments();
           table.uuid('uuid');
           table.string('championName');
-          table.string('championKey');
+          table.string('championKey'); 
           table.string('role');
           table.timestamps(true, true);
         })
@@ -163,16 +231,11 @@ async function initialiseTables() {
         .createTable('roles', (table) => {
           table.increments().primary();
           table.uuid('uuid');
-          table.string('marksman');
-          table.string('mages');
-          table.string('fighter');
-          table.string('tank');
-          table.string('assassin');
-          table.string('support');
+          table.string('role');
           table.timestamps(true, true);
         }) 
         .then(async () => { 
-          console.log('created table roles');
+          console.log('created table roles'); 
           
         });
 
